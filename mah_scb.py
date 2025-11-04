@@ -39,7 +39,47 @@ def main():
 				november_3()
 
 def play_scb():
-	print("Skibidi!!!!!")
+	global attempts, word_length
+
+	get_words()
+
+	# Creates variables used for the game
+	word_has_been_guessed = False
+	mystery_word = select_random_word()
+	attempts_left = attempts
+	attempts_used = 0
+
+	while word_has_been_guessed == False and attempts_left > 0:
+		print(f"You have {attempts_left} attempts remaining.")
+
+		while True:
+			try:
+				guess = input(f"Guess a {word_length} letter word: ")
+			except ValueError:
+				continue
+			if not guess.isalpha():
+				print("You must type in valid Alphabetical characters.\n")
+			elif len(list(guess.strip())) != word_length:
+				print(f"Word must be {word_length} letters long.\n")
+			else:
+				guess = guess.strip()
+				break
+
+		if guess == mystery_word:
+			word_has_been_guessed = True
+		else:
+			print("no")
+
+		attempts_left = attempts_left - 1
+		attempts_used = attempts_used + 1
+
+	if attempts_left == 0:
+		print("You have 0 attempts left and lost the game.")
+		print(f"The word was {mystery_word}.")
+	else: 
+		print(f"Congratulations! You have guessed the word!")
+		print(f"The word was {mystery_word}.")
+		print(f"You guessed the word in {attempts_used} attempts.")
 
 def view_settings():
 	global word_length, attempts
@@ -104,6 +144,34 @@ def change_settings():
 			clear_terminal()
 			change_settings()
 
+def get_words():
+	try:
+		with open("assets/words_alpha.txt", "r") as file:
+			for word in file:
+				# word.strip() removes \n (New Line Character)
+				if len(list(word.strip())) != word_length:
+					continue
+				word_list.append(word.strip()) 
+	except FileNotFoundError:
+		print("No File Exists")
+
+def select_random_word():
+	global word_list
+	word = random.choice(word_list)
+	return word
+
+def clear_terminal(): os.system('cls' if os.name == 'nt' else 'clear')
+
+# Creates empty list to put words in
+word_list = []
+
+# Changeable settings for the game
+word_length = 5
+attempts = 6
+
+if __name__ == "__main__":
+	main()
+
 def november_3():
 	get_words()
 
@@ -114,7 +182,6 @@ def november_3():
 			desired_letter = input("Input your desired letter: ")
 			print()
 		except ValueError:
-			print("Skibidi Toilet")
 			continue
 		if len(list(desired_letter)) != 1:
 			print("You must type in ONE valid Alphabetical character.\n")
@@ -129,26 +196,3 @@ def november_3():
 		print(f"Position: {random_word.index(desired_letter)}")
 	else:
 		print(f"No. {desired_letter} is not in {random_word}")
-
-def get_words():
-	try:
-		with open("assets/words_alpha.txt", "r") as file:
-			for word in file:
-				# word.strip() removes \n (New Line Character)
-				if len(list(word.strip())) != word_length:
-					continue
-				word_list.append(word.strip()) 
-	except FileNotFoundError:
-		print("No File Exists")
-
-def clear_terminal(): os.system('cls' if os.name == 'nt' else 'clear')
-
-# Creates empty list to put words in
-word_list = []
-
-# Changeable settings for the game
-word_length = 5
-attempts = 6
-
-if __name__ == "__main__":
-	main()
