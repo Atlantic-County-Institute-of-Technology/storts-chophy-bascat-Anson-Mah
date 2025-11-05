@@ -9,7 +9,6 @@ def main():
 		print('[1]. Play "Storts, Chophy, Bascat"')
 		print("[2]. View Settings")
 		print("[3]. Change Settings")
-		print("[8]. 3rd of November")
 
 		# Input Correction
 		# If the user's input would break the program, it changes the input such that it will not break the program.
@@ -35,11 +34,9 @@ def main():
 				view_settings()
 			case 3:
 				change_settings()
-			case 8:
-				november_3()
 
 def play_scb():
-	global attempts, word_length
+	global attempts, word_length, alphabet
 
 	get_words()
 
@@ -48,12 +45,22 @@ def play_scb():
 	mystery_word = select_random_word()
 	attempts_left = attempts
 	attempts_used = 0
+	chophy_letters = []
+	storts_letters = []
+	bascat_letters = []
+	unguessed_letters = alphabet
 
 	while word_has_been_guessed == False and attempts_left > 0:
 		print(f"You have {attempts_left} attempts remaining.")
 
 		while True:
 			try:
+				# Displays letter group lists. 
+				# The ", ".join(letters) syntax is used to remove brackets and quotation marks when printing the list
+				print(f"\nChophy: {", ".join(chophy_letters)}")
+				print(f"Storts: {", ".join(storts_letters)}")
+				print(f"Bascat: {", ".join(bascat_letters)}")
+				print(f"Unguessed: {", ".join(unguessed_letters)}\n")
 				guess = input(f"Guess a {word_length} letter word: ")
 			except ValueError:
 				continue
@@ -62,23 +69,63 @@ def play_scb():
 			elif len(list(guess.strip())) != word_length:
 				print(f"Word must be {word_length} letters long.\n")
 			else:
-				guess = guess.strip()
+				guess = guess.strip().lower()
+				print()
 				break
 
-		if guess == mystery_word:
-			word_has_been_guessed = True
-		else:
-			print("no")
-
-		attempts_left = attempts_left - 1
 		attempts_used = attempts_used + 1
 
+		# Ends game is user guessed correct word
+		if mystery_word == guess:
+			word_has_been_guessed = True
+			break
+		else:
+			attempts_left = attempts_left - 1
+
+			# Removes all guessed letters in this for loop. 
+			# The letters then get added back to its appropiate list in the "Letter Checking" for loop
+			for i in range(word_length):
+				if guess[i] in chophy_letters:
+					chophy_letters.remove(guess[i])
+				elif guess[i] in storts_letters:
+					storts_letters.remove(guess[i])
+				elif guess[i] in bascat_letters:
+					bascat_letters.remove(guess[i])
+				elif guess[i] in unguessed_letters:
+					unguessed_letters.remove(guess[i])
+
+			# Letter Checking
+			for i in range(word_length):
+				if guess[i] in mystery_word and guess[i] == mystery_word[i]:
+					print(f"{guess[i]}, Green / Chophy")
+					chophy_letters.append(guess[i])
+					continue
+				if guess[i] in mystery_word:
+					print(f"{guess[i]}, Yellow / Storts")
+					storts_letters.append(guess[i])
+				else:
+					print(f"{guess[i]}, gRey / Bascat")
+					bascat_letters.append(guess[i])
+
+			# Removes duplicate letters from list
+			chophy_letters = list(set(chophy_letters))
+			storts_letters = list(set(storts_letters))
+			bascat_letters = list(set(bascat_letters))
+
+			# Sorts lists
+			chophy_letters.sort()
+			storts_letters.sort()
+			bascat_letters.sort()
+
+			print()
+
+	# Game End
 	if attempts_left == 0:
 		print("You have 0 attempts left and lost the game.")
-		print(f"The word was {mystery_word}.")
+		print(f'The word was "{mystery_word}".')
 	else: 
-		print(f"Congratulations! You have guessed the word!")
-		print(f"The word was {mystery_word}.")
+		print(f"Congratulations! You have successfully guessed the word!")
+		print(f'The word was "{mystery_word}".')
 		print(f"You guessed the word in {attempts_used} attempts.")
 
 def view_settings():
@@ -106,6 +153,7 @@ def change_settings():
 			selection = 9
 			break
 
+	# Lets user change the settings that they want to change.
 	match selection:
 		case 1:
 			# Input Validation
@@ -146,9 +194,9 @@ def change_settings():
 
 def get_words():
 	try:
-		with open("assets/words_alpha.txt", "r") as file:
+		with open("assets/words_10k_most_common.txt", "r") as file:
 			for word in file:
-				# word.strip() removes \n (New Line Character)
+				# word.strip() function removes \n (New Line Character)
 				if len(list(word.strip())) != word_length:
 					continue
 				word_list.append(word.strip()) 
@@ -169,30 +217,8 @@ word_list = []
 word_length = 5
 attempts = 6
 
+# English Alphabet
+alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+
 if __name__ == "__main__":
 	main()
-
-def november_3():
-	get_words()
-
-	random_word = random.choice(word_list)
-
-	while True:
-		try:
-			desired_letter = input("Input your desired letter: ")
-			print()
-		except ValueError:
-			continue
-		if len(list(desired_letter)) != 1:
-			print("You must type in ONE valid Alphabetical character.\n")
-		elif not desired_letter.isalpha():
-			print("You must type in a valid Alphabetical character.\n")
-		else:
-			desired_letter = desired_letter.lower()
-			break
-	
-	if desired_letter in random_word:
-		print(f"Yes. {desired_letter} is in {random_word}")
-		print(f"Position: {random_word.index(desired_letter)}")
-	else:
-		print(f"No. {desired_letter} is not in {random_word}")
