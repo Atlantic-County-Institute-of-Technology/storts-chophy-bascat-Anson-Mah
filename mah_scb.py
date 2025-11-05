@@ -156,8 +156,7 @@ def change_settings():
 	# Lets user change the settings that they want to change.
 	match selection:
 		case 1:
-			# Input Validation
-			# Only allows positive integers
+			# Word Length
 			while True:
 				try:
 					user_word_length = int(input("\nInput your desired word length: "))
@@ -166,14 +165,15 @@ def change_settings():
 					continue
 				if user_word_length <= 0:
 					print("\nYou have inputted a non-positive integer. Please input a positive integer.\n")
+				if user_word_length > 19:
+					print("\nUnfortunately, there are no words that have your desired word length. Please pick a different number.")
 				else:
 					global word_length
 					word_length = user_word_length
 					print(f"\nWord Length set to {word_length}")
 					break
 		case 2:
-			# Input Validation
-			# Only allows positive integers
+			# Amount of Attempts
 			while True:
 				try:
 					user_attempts = int(input("\nInput your desired amount of attempts: "))
