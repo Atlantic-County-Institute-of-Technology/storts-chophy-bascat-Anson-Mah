@@ -9,6 +9,7 @@ def main():
 		print('[1]. Play "Storts, Chophy, Bascat"')
 		print("[2]. View Settings")
 		print("[3]. Change Settings")
+		print('[4]. How to Play "Storts, Chophy, Bascat"')
 
 		# Input Correction
 		# If the user's input would break the program, it changes the input such that it will not break the program.
@@ -34,40 +35,53 @@ def main():
 				view_settings()
 			case 3:
 				change_settings()
+			case 4:
+				show_how_to_play()
 
 def play_scb():
-	global attempts, word_length, alphabet
+	global attempts, word_length, mystery_word_candiates, guessable_words
 
 	get_words()
 
 	# Creates variables used for the game
 	word_has_been_guessed = False
-	mystery_word = select_random_word()
+	mystery_word = random.choice(mystery_word_candiates)
 	attempts_left = attempts
 	attempts_used = 0
 	chophy_letters = []
 	storts_letters = []
 	bascat_letters = []
-	unguessed_letters = alphabet
+	unguessed_letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 
 	while word_has_been_guessed == False and attempts_left > 0:
-		print(f"You have {attempts_left} attempts remaining.")
+		if attempts_left != 1:
+			print(f"You have {attempts_left} attempts remaining.")
+		else:
+			print(f"You have {attempts_left} attempt remaining.")
 
+		# Displays lists of all letters in a certain category. 
+			# Prints all letters that were marked as Chophy, Storts, or Bascat in a previous guess
+			# Also prints a list of unguessed letters.
+		# The ", ".join(letters) syntax is used to remove brackets and quotation marks when printing the list
+		print(f"\nChophy: {", ".join(chophy_letters)}")
+		print(f"Storts: {", ".join(storts_letters)}")
+		print(f"Bascat: {", ".join(bascat_letters)}")
+		print(f"Unguessed: {", ".join(unguessed_letters)}")
+
+		# Input Validation
+		# This portion of code loops until the user inputs a valid guess.
 		while True:
 			try:
-				# Displays letter group lists. 
-				# The ", ".join(letters) syntax is used to remove brackets and quotation marks when printing the list
-				print(f"\nChophy: {", ".join(chophy_letters)}")
-				print(f"Storts: {", ".join(storts_letters)}")
-				print(f"Bascat: {", ".join(bascat_letters)}")
-				print(f"Unguessed: {", ".join(unguessed_letters)}\n")
+				print()
 				guess = input(f"Guess a {word_length} letter word: ")
 			except ValueError:
 				continue
 			if not guess.isalpha():
-				print("You must type in valid Alphabetical characters.\n")
+				print("You must type in valid Alphabetical characters.")
 			elif len(list(guess.strip())) != word_length:
-				print(f"Word must be {word_length} letters long.\n")
+				print(f"Word must be {word_length} letters long.")
+			elif guess not in guessable_words:
+				print("Not in word list.")
 			else:
 				guess = guess.strip().lower()
 				print()
@@ -75,7 +89,7 @@ def play_scb():
 
 		attempts_used = attempts_used + 1
 
-		# Ends game is user guessed correct word
+		# Ends the game if user has guessed the correct word
 		if mystery_word == guess:
 			word_has_been_guessed = True
 			break
@@ -97,14 +111,14 @@ def play_scb():
 			# Letter Checking
 			for i in range(word_length):
 				if guess[i] in mystery_word and guess[i] == mystery_word[i]:
-					print(f"{guess[i]}, Green / Chophy")
+					print(f"{guess[i]}, Chophy (C)")
 					chophy_letters.append(guess[i])
 					continue
 				if guess[i] in mystery_word:
-					print(f"{guess[i]}, Yellow / Storts")
+					print(f"{guess[i]}, Storts (S)")
 					storts_letters.append(guess[i])
 				else:
-					print(f"{guess[i]}, gRey / Bascat")
+					print(f"{guess[i]}, Bascat (B)")
 					bascat_letters.append(guess[i])
 
 			# Removes duplicate letters from list
@@ -126,7 +140,10 @@ def play_scb():
 	else: 
 		print(f"Congratulations! You have successfully guessed the word!")
 		print(f'The word was "{mystery_word}".')
-		print(f"You guessed the word in {attempts_used} attempts.")
+		if attempts_used != 1:
+			print(f"You guessed the word in {attempts_used} attempts.")
+		else:
+			print(f"You guessed the word in {attempts_used} attempt! You are so sigma for guessing the word in 1 attempt 😎")
 
 def view_settings():
 	global word_length, attempts
@@ -161,12 +178,12 @@ def change_settings():
 				try:
 					user_word_length = int(input("\nInput your desired word length: "))
 				except ValueError:
-					print("\nPlease input a positive integer.\n")
+					print("Please input a positive integer.")
 					continue
 				if user_word_length <= 0:
-					print("\nYou have inputted a non-positive integer. Please input a positive integer.\n")
-				if user_word_length > 19:
-					print("\nUnfortunately, there are no words that have your desired word length. Please pick a different number.")
+					print("You have inputted a non-positive integer. Please input a positive integer.")
+				elif user_word_length > 19:
+					print("Unfortunately, there are no words that have your desired word length. Please pick a different number.")
 				else:
 					global word_length
 					word_length = user_word_length
@@ -178,10 +195,10 @@ def change_settings():
 				try:
 					user_attempts = int(input("\nInput your desired amount of attempts: "))
 				except ValueError:
-					print("\nPlease input a positive integer.\n")
+					print("Please input a positive integer.")
 					continue
 				if user_attempts <= 0:
-					print("\nYou have inputted a non-positive integer. Please input a positive integer.\n")
+					print("You have inputted a non-positive integer. Please input a positive integer.")
 				else:
 					global attempts
 					attempts = user_attempts
@@ -192,33 +209,82 @@ def change_settings():
 			clear_terminal()
 			change_settings()
 
+def show_how_to_play():
+	print("How to Play: Storts, Chophy, Bascat")
+	
+	print()
+	
+	print("Objective: Guess a mystery 5 letter word in 6 attempts.")
+	
+	print()
+	
+	print("Each guess must be a valid 5 letter word.")
+	print("After each guess, each letter will appear with an associated word that tells you how close your guess was to the mystery word.")
+	
+	print()
+
+	print("Chophy: Your letter is in the word and is in the correct position.")
+	print("Storts: Your letter is in the word, but is not in the correct position.")
+	print("Bascat: Your letter does not appear in the word at all.")
+
+	print()
+
+	print("The word length and the amount of attempts are settings that can be changed.")
+	print("The default settings are 5 letters and 6 attempts")
+
+	print("-----------------------------------------")
+
+	print("EXAMPLE:")
+
+	print()
+
+	print("Mystery Word: WHILE")
+	print("Guess: WEARY")
+
+	print()
+
+	print("W: Chophy")
+	print("E: Storts")
+	print("A: Bascat")
+	print("R: Bascat")
+	print("Y: Bascat")
+
 def get_words():
+	# Adds words to list of guessable words.
+	# Picks words from "words_alpha.txt", offering a massive pool of guessable words.
+	try:
+		with open("assets/words_alpha.txt", "r") as file:
+			for word in file:
+				# word.strip() function removes \n (New Line Character)
+				if len(list(word.strip())) != word_length:
+					continue
+				guessable_words.append(word.strip()) 
+	except FileNotFoundError:
+		print("No File Exists")
+
+	# Adds words to a separate list.
+	# Picks words from "words_10k_most_common.txt", which has a smaller pool than "words_alpha.txt".
+	# The mystery word is chosen from this list instead.
+	# The purpose of this is to ensure that obscure words are not picked as the mystery word.
 	try:
 		with open("assets/words_10k_most_common.txt", "r") as file:
 			for word in file:
 				# word.strip() function removes \n (New Line Character)
 				if len(list(word.strip())) != word_length:
 					continue
-				word_list.append(word.strip()) 
+				mystery_word_candiates.append(word.strip()) 
 	except FileNotFoundError:
 		print("No File Exists")
-
-def select_random_word():
-	global word_list
-	word = random.choice(word_list)
-	return word
 
 def clear_terminal(): os.system('cls' if os.name == 'nt' else 'clear')
 
 # Creates empty list to put words in
-word_list = []
+mystery_word_candiates = []
+guessable_words = []
 
 # Changeable settings for the game
 word_length = 5
 attempts = 6
-
-# English Alphabet
-alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 
 if __name__ == "__main__":
 	main()
