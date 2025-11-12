@@ -9,7 +9,8 @@ def main():
 		print('[1]. Play "Storts, Chophy, Bascat"')
 		print("[2]. View Settings")
 		print("[3]. Change Settings")
-		print('[4]. How to Play "Storts, Chophy, Bascat"')
+		print('[4]. Explain Settings')
+		print('[5]. How to Play "Storts, Chophy, Bascat"')
 
 		# Input Correction
 		# If the user's input would break the program, it changes the input such that it will not break the program.
@@ -36,16 +37,26 @@ def main():
 			case 3:
 				change_settings()
 			case 4:
+				explain_settings()
+			case 5:
 				show_how_to_play()
 
 def play_scb():
 	global attempts, word_length, mystery_word_candiates, guessable_words
 
+	# Resets word lists
+	# This accounts for situations where the user changes the word length in between games
+	mystery_word_candiates = []
+	guessable_words = []
+
 	get_words()
 
 	# Creates variables used for the game
 	word_has_been_guessed = False
-	mystery_word = random.choice(mystery_word_candiates)
+	if obscure_words == True:
+		mystery_word = random.choice(guessable_words)
+	else:
+		mystery_word = random.choice(mystery_word_candiates)
 	attempts_left = attempts
 	attempts_used = 0
 	chophy_letters = []
@@ -146,18 +157,27 @@ def play_scb():
 			print(f"You guessed the word in {attempts_used} attempt! You are so sigma for guessing the word in 1 attempt 😎")
 
 def view_settings():
-	global word_length, attempts
+	global word_length, attempts, obscure_words
 	print("Current Settings")
 	print("-----------------")
 	print(f"Word Length: {word_length}")
 	print(f"Amount of Attempts: {attempts}")
+	if obscure_words == True:
+		print("Obscure Words: Enabled")
+	else:
+		print("Obscure Words: Disabled")
 
 def change_settings():
+	global word_length, attempts, obscure_words
+
 	# Settings Menu
 	print("Which settings would you like to change?")
 	print("-----------------------------------------")
 	print("[1]. Word Length")
 	print("[2]. # of Attempts")
+	print("[3]. Enable/Disable Obscure Words")
+	print("[4]. Restore Default Settings")
+	print("[5]. Exit Settings")
 
 	# Input Correction
 	# If the user's input would break the program, it changes the input such that it will not break the program.
@@ -185,9 +205,9 @@ def change_settings():
 				elif user_word_length > 19:
 					print("Unfortunately, there are no words that have your desired word length. Please pick a different number.")
 				else:
-					global word_length
 					word_length = user_word_length
-					print(f"\nWord Length set to {word_length}")
+					clear_terminal()
+					print(f"Word Length set to {word_length}\n")
 					break
 		case 2:
 			# Amount of Attempts
@@ -200,14 +220,52 @@ def change_settings():
 				if user_attempts <= 0:
 					print("You have inputted a non-positive integer. Please input a positive integer.")
 				else:
-					global attempts
 					attempts = user_attempts
-					print(f"\nAmount of attempts set to {attempts}")
+					clear_terminal()
+					print(f"Amount of attempts set to {attempts}\n")
 					break
-		case _:
-			# Brings you back to the Settings Menu
+		case 3:
+			if obscure_words == True:
+				obscure_words = False
+				clear_terminal()
+				print("Obscure Words now Disabled")
+				print("Obscure Words are now unable to be selected as the mystery word.\n")
+			else:
+				obscure_words = True
+				clear_terminal()
+				print("Obscure Words now Enabled")
+				print("Obscure Words are now able to be selected as the mystery word.\n")
+		case 4:
+			word_length = 5
+			attempts = 6
+			obscure_words = False
 			clear_terminal()
-			change_settings()
+			print("Default Settings have been restored.\n")
+		case 5:
+			clear_terminal()
+			main()
+
+	change_settings()
+
+def explain_settings():
+	print("WORD LENGTH: ")
+	print("Determines the amount of letters your words will have.")
+	print("The mystery word will have the word length that you set, and your guesses are required to have the same word length as the mystery word.")
+	print("The default word length is 5 letters, meaning that your guesses and mystery word will be 5 letters long by default.")
+
+	print("---------------------------------------------------------------")
+
+
+	print("# OF ATTEMPTS: ")
+	print("Determines the amount of guesses you will be able to make before losing the game.")
+	print("More attempts makes the game easier, and less attempts makes the game more difficult. The default amount of attempts of 6.")
+
+	print("---------------------------------------------------------------")
+
+
+	print("OBSCURE WORDS: ")
+	print("Determines if obscure words are able to be selected as the mystery word.")
+	print("Enabling this settings makes the game more difficult, so this settings is disabled by default.")
 
 def show_how_to_play():
 	print("How to Play: Storts, Chophy, Bascat")
@@ -229,10 +287,10 @@ def show_how_to_play():
 
 	print()
 
-	print("The word length and the amount of attempts are settings that can be changed.")
-	print("The default settings are 5 letters and 6 attempts")
+	print("The word length, amount of attempts, and obscure words are settings that can be changed.")
+	print("The default settings are 5 letters, 6 attempts, and obscure words are disabled")
 
-	print("-----------------------------------------")
+	print("-----------------------------------------------------")
 
 	print("EXAMPLE:")
 
@@ -285,6 +343,7 @@ guessable_words = []
 # Changeable settings for the game
 word_length = 5
 attempts = 6
+obscure_words = False
 
 if __name__ == "__main__":
 	main()
