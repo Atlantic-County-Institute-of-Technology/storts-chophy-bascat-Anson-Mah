@@ -42,27 +42,27 @@ def main():
 				show_how_to_play()
 
 def play_scb():
-	global attempts, word_length, mystery_word_candiates, guessable_words
+	global attempts, word_length, mystery_word_candiates_list, guessable_words_list
 
 	# Resets word lists
 	# This accounts for situations where the user changes the word length in between games
-	mystery_word_candiates = []
-	guessable_words = []
+	mystery_word_candiates_list = []
+	guessable_words_list = []
 
 	get_words()
 
 	# Creates variables used for the game
 	word_has_been_guessed = False
-	if obscure_words == True:
-		mystery_word = random.choice(guessable_words)
-	else:
-		mystery_word = random.choice(mystery_word_candiates)
 	attempts_left = attempts
 	attempts_used = 0
 	chophy_letters = []
 	storts_letters = []
 	bascat_letters = []
 	unguessed_letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+	if obscure_words == True:
+		mystery_word = random.choice(guessable_words_list)
+	else:
+		mystery_word = random.choice(mystery_word_candiates_list)
 
 	while word_has_been_guessed == False and attempts_left > 0:
 		if attempts_left != 1:
@@ -91,7 +91,7 @@ def play_scb():
 				print("You must type in valid Alphabetical characters.")
 			elif len(list(guess.strip())) != word_length:
 				print(f"Word must be {word_length} letters long.")
-			elif guess not in guessable_words:
+			elif guess not in guessable_words_list:
 				print("Not in word list.")
 			else:
 				guess = guess.strip().lower()
@@ -122,11 +122,11 @@ def play_scb():
 			# Letter Checking
 			for i in range(word_length):
 				if guess[i] in mystery_word and guess[i] == mystery_word[i]:
-					print(f"{guess[i]}, Chophy (C)")
+					print(f"{guess[i]}, Chophy {GREEN}(C){RESET}")
 					chophy_letters.append(guess[i])
 					continue
 				if guess[i] in mystery_word:
-					print(f"{guess[i]}, Storts (S)")
+					print(f"{guess[i]}, Storts {YELLOW}(S){RESET}")
 					storts_letters.append(guess[i])
 				else:
 					print(f"{guess[i]}, Bascat (B)")
@@ -229,12 +229,10 @@ def change_settings():
 				obscure_words = False
 				clear_terminal()
 				print("Obscure Words now Disabled")
-				print("Obscure Words are now unable to be selected as the mystery word.\n")
 			else:
 				obscure_words = True
 				clear_terminal()
 				print("Obscure Words now Enabled")
-				print("Obscure Words are now able to be selected as the mystery word.\n")
 		case 4:
 			word_length = 5
 			attempts = 6
@@ -258,14 +256,17 @@ def explain_settings():
 
 	print("# OF ATTEMPTS: ")
 	print("Determines the amount of guesses you will be able to make before losing the game.")
-	print("More attempts makes the game easier, and less attempts makes the game more difficult. The default amount of attempts of 6.")
+	print("More attempts makes the game easier, and less attempts makes the game more difficult.")
+	print("The default amount of attempts of 6.")
 
 	print("---------------------------------------------------------------")
 
 
 	print("OBSCURE WORDS: ")
 	print("Determines if obscure words are able to be selected as the mystery word.")
-	print("Enabling this settings makes the game more difficult, so this settings is disabled by default.")
+	print("Enabling this settings adds obscure words into the pool of mystery word candidates.")
+	print("Enabling this setting does not gaurantee that the word you choose will be an obscure word.")
+	print("By default, this setting is disabled, meaning that by default only common words can be selected as the mystery word.")
 
 def show_how_to_play():
 	print("How to Play: Storts, Chophy, Bascat")
@@ -316,7 +317,7 @@ def get_words():
 				# word.strip() function removes \n (New Line Character)
 				if len(list(word.strip())) != word_length:
 					continue
-				guessable_words.append(word.strip()) 
+				guessable_words_list.append(word.strip()) 
 	except FileNotFoundError:
 		print("No File Exists")
 
@@ -330,20 +331,25 @@ def get_words():
 				# word.strip() function removes \n (New Line Character)
 				if len(list(word.strip())) != word_length:
 					continue
-				mystery_word_candiates.append(word.strip()) 
+				mystery_word_candiates_list.append(word.strip()) 
 	except FileNotFoundError:
 		print("No File Exists")
 
 def clear_terminal(): os.system('cls' if os.name == 'nt' else 'clear')
 
 # Creates empty list to put words in
-mystery_word_candiates = []
-guessable_words = []
+mystery_word_candiates_list = []
+guessable_words_list = []
 
 # Changeable settings for the game
 word_length = 5
 attempts = 6
 obscure_words = False
+
+# Terminal Colours
+GREEN   = '\033[32m'
+YELLOW  = '\033[33m'
+RESET   = '\033[39m'
 
 if __name__ == "__main__":
 	main()
