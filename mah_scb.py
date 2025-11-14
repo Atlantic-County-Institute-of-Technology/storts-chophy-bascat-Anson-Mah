@@ -122,11 +122,11 @@ def play_scb():
 			# Letter Checking
 			for i in range(word_length):
 				if guess[i] in mystery_word and guess[i] == mystery_word[i]:
-					print(f"{guess[i]}, Chophy {GREEN}(C){RESET}")
+					print(f"{guess[i]}, {GREEN}Chophy (C){DEFAULT}")
 					chophy_letters.append(guess[i])
 					continue
 				if guess[i] in mystery_word:
-					print(f"{guess[i]}, Storts {YELLOW}(S){RESET}")
+					print(f"{guess[i]}, {YELLOW}Storts (S){DEFAULT}")
 					storts_letters.append(guess[i])
 				else:
 					print(f"{guess[i]}, Bascat (B)")
@@ -349,7 +349,7 @@ obscure_words = False
 # Terminal Colours
 GREEN   = '\033[32m'
 YELLOW  = '\033[33m'
-RESET   = '\033[39m'
+DEFAULT   = '\033[39m'
 
 if __name__ == "__main__":
 	main()
